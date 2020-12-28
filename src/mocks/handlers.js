@@ -77,4 +77,26 @@ export const handlers = [
       return res(ctx.status(404, "Not found"))
     }
   }),
+  rest.post("/analyticsA", (req, res, ctx) => {
+    const key = "analyticsA"
+    let analytics = localStorage.getItem(key)
+    if (analytics) {
+      analytics = JSON.parse(analytics)
+      localStorage.setItem(key, JSON.stringify([...analytics, req.body]))
+    } else {
+      localStorage.setItem(key, JSON.stringify([req.body]))
+    }
+    return res(ctx.status(204))
+  }),
+  rest.post("/analyticsB", (req, res, ctx) => {
+    const key = "analyticsB"
+    let analytics = localStorage.getItem(key)
+    if (analytics) {
+      analytics = JSON.parse(analytics)
+      localStorage.setItem(key, JSON.stringify([...analytics, req.body]))
+    } else {
+      localStorage.setItem(key, JSON.stringify([req.body]))
+    }
+    return res(ctx.status(204))
+  }),
 ]

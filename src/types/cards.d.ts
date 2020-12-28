@@ -15,3 +15,8 @@ export interface CardUpdateRequest {
   name: string
   imageUrl: string
 }
+
+export interface AnalyticsRequest {
+  eventName: string
+  eventProperties?: Record<string, any>
+}
