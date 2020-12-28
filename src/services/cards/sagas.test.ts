@@ -12,9 +12,15 @@ import {
   UPDATE_CARD,
   UPDATE_CARD_ERROR,
   UPDATE_CARD_SUCCESS,
+  RESET_DELETE_STATUS,
 } from "./CardsSlice"
 import { CardsSagaActions } from "./sagasActions"
-import { loadCardsSagas, deleteCardSagas, updateCardSagas } from "./sagas"
+import {
+  loadCardsSagas,
+  deleteCardSagas,
+  updateCardSagas,
+  searchInputSagas,
+} from "./sagas"
 import { cards } from "../../mocks/cards"
 
 test("Get all cards without filter sagas", () => {
@@ -53,6 +59,15 @@ test("Get all cards with filter sagas", () => {
     .run({ timeout: false })
 })
 
+test("Get all cards with filter sagas from an input", () => {
+  return expectSaga(searchInputSagas, {
+    payload: { filter: "Du" },
+    type: CardsSagaActions.INPUT_SEARCH,
+  })
+    .put({ type: CardsSagaActions.FETCH_CARDS_SAGA, payload: { filter: "Du" } })
+    .run({ timeout: false })
+})
+
 test("Delete a card sagas", () => {
   return expectSaga(deleteCardSagas, {
     type: CardsSagaActions.DELETE_CARDS_SAGA,
@@ -69,10 +84,12 @@ test("Delete a card sagas", () => {
     )
     .put(DELETE_CARD())
     .put(DELETE_CARD_SUCCESS(cards[0]))
+    .put(RESET_DELETE_STATUS())
+    .dispatch({ type: CardsSagaActions.HIDE_DELETE_MODAL })
     .hasFinalState({
       value: cards.slice(1),
       fetchStatus: FETCH_STATES.IDLE,
-      deleteStatus: FETCH_STATES.SUCCESS,
+      deleteStatus: FETCH_STATES.IDLE,
       updateStatus: FETCH_STATES.IDLE,
       error: undefined,
     })

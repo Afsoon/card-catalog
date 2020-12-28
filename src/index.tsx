@@ -1,8 +1,10 @@
 import React from "react"
 import ReactDOM from "react-dom"
+import { Switch, Route } from "react-router-dom"
+import { ConnectedRouter } from "connected-react-router"
 import "./index.css"
 import App from "./App"
-import { store } from "./app/store"
+import { store, history } from "./app/store"
 import { Provider } from "react-redux"
 import * as serviceWorker from "./serviceWorker"
 
@@ -13,7 +15,15 @@ worker.start()
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <ConnectedRouter history={history}>
+        <Switch>
+          <Route path="/cards/:cardId">Something</Route>
+          <Route exact path="/">
+            <App />
+          </Route>
+          <Route path="*">Not Found</Route>
+        </Switch>
+      </ConnectedRouter>
     </Provider>
   </React.StrictMode>,
   document.getElementById("root"),

@@ -1,5 +1,13 @@
 import { PayloadAction } from "@reduxjs/toolkit"
-import { all, call, put, takeEvery } from "redux-saga/effects"
+import {
+  all,
+  call,
+  put,
+  take,
+  takeEvery,
+  takeLatest,
+  delay,
+} from "redux-saga/effects"
 import { CardsSagaActions } from "./sagasActions"
 import { getCards, deleteCard, updateCard } from "./api"
 import {
@@ -9,6 +17,7 @@ import {
   DELETE_CARD,
   DELETE_CARD_ERROR,
   DELETE_CARD_SUCCESS,
+  RESET_DELETE_STATUS,
   UPDATE_CARD,
   UPDATE_CARD_ERROR,
   UPDATE_CARD_SUCCESS,
@@ -29,7 +38,7 @@ async function extractCards(filter: string | undefined) {
 async function extractDeletedCard(cardId: string) {
   const response = await deleteCard(cardId)
 
-  if (response.status > 399) {
+  if (response.status > 499 || response.status === 400) {
     throw Error("Unable to retrieve the cards")
   }
 
@@ -78,6 +87,8 @@ export function* deleteCardSagas({
   try {
     const result = yield call(extractDeletedCard, payload.cardId)
     yield put(DELETE_CARD_SUCCESS(result))
+    yield take(CardsSagaActions.HIDE_DELETE_MODAL)
+    yield put(RESET_DELETE_STATUS())
   } catch (exception) {
     yield put(
       DELETE_CARD_ERROR({ errorMessage: "Unable to delete the card selected" }),
@@ -108,11 +119,19 @@ export function* updateCardSagas({
   }
 }
 
+export function* searchInputSagas({
+  payload,
+}: PayloadAction<FilterCardsPayload>) {
+  delay(1000)
+  yield put({ type: CardsSagaActions.FETCH_CARDS_SAGA, payload })
+}
+
 // eslint-disable-next-line import/no-anonymous-default-export
 export default function* () {
   yield all([
     takeEvery(CardsSagaActions.FETCH_CARDS_SAGA, loadCardsSagas),
     takeEvery(CardsSagaActions.DELETE_CARDS_SAGA, deleteCardSagas),
     takeEvery(CardsSagaActions.UPDATE_CARD_SAGA, updateCardSagas),
+    takeLatest(CardsSagaActions.INPUT_SEARCH, loadCardsSagas),
   ])
 }

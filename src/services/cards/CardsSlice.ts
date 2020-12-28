@@ -80,6 +80,9 @@ export const counterSliceBuilder = (initialState: CardsState) =>
           }
         })
       },
+      RESET_DELETE_STATUS: (state) => {
+        state.deleteStatus = FETCH_STATES.IDLE
+      },
     },
   })
 
@@ -95,11 +98,16 @@ export const {
   UPDATE_CARD,
   UPDATE_CARD_ERROR,
   UPDATE_CARD_SUCCESS,
+  RESET_DELETE_STATUS,
 } = counterSlice.actions
 
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
 export const selectCards = (state: RootState) => state.cards.value
+export const selectFetchCardsStatus = (state: RootState) =>
+  state.cards.fetchStatus
+export const selectDeleteCardStatus = (state: RootState) =>
+  state.cards.deleteStatus
 
 export default counterSlice.reducer
