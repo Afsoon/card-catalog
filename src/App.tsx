@@ -1,9 +1,17 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import { useEffect } from "react"
+import logo from "./logo.svg"
+import { Counter } from "./features/counter/Counter"
+
+const fetchCards = async () => {
+  const rest = await fetch("http://localhost:3000/")
+  const body = await rest.json()
+  console.log(body.data)
+}
 
 function App() {
+  useEffect(() => {
+    fetchCards()
+  }, [])
   return (
     <div className="App">
       <header className="App-header">
@@ -52,7 +60,7 @@ function App() {
         </span>
       </header>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
