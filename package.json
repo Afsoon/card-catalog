@@ -60,6 +60,7 @@
     "msw": "^0.24.3",
     "postcss": "^7",
     "prettier": "^2.2.1",
+    "redux-saga-test-plan": "^4.0.1",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat",
     "typescript": "^4.1.3"
   }
