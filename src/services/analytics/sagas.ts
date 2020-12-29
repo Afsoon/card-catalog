@@ -59,6 +59,7 @@ export function* sendAnalyticsBSaga(payload: AnalyticsRequest) {
 }
 
 export function* sendAnalytics({ payload }: PayloadAction<AnalyticsRequest>) {
+  console.log(payload)
   yield fork(sendAnalyticsASaga, payload)
   yield fork(sendAnalyticsBSaga, payload)
 }

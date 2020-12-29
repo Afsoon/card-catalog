@@ -10,11 +10,13 @@ const buildRequest = async (
   path: string,
   options?: RequestInit | undefined,
 ) => {
-  return fetch(`${path}`, Object.assign(BASE_HEADERS, options))
+  return fetch(`${path}`, Object.assign({}, BASE_HEADERS, options))
 }
 
 export const getCards = (filter?: string) => {
-  return buildRequest(`/cards${filter ? `?q=${filter}` : ""}`)
+  return buildRequest(`/cards${filter ? `?q=${filter}` : ""}`, {
+    method: "GET",
+  })
 }
 
 export const deleteCard = (cardId: string) => {

@@ -11,6 +11,7 @@ import {
 } from "./ui/layout/Grid"
 import { DeleteButton, EditCard } from "./ui/components/GridButtons/GridButtons"
 import { CardsSagaActions } from "./services/cards/sagasActions"
+import { AnalyticsSagaActions } from "./services/analytics/sagasActions"
 import {
   selectFetchCardsStatus,
   selectDeleteCardStatus,
@@ -30,6 +31,27 @@ const useDeleteModal = (cardId: string) => {
 
   const onClick = useCallback(() => {
     dispatch({ type: CardsSagaActions.DELETE_CARDS_SAGA, payload: { cardId } })
+    dispatch({
+      type: AnalyticsSagaActions.SEND_ANALYTICS,
+      payload: {
+        eventName: "DELETE_CARD_MODAL",
+        eventProperties: {
+          cardId,
+        },
+      },
+    })
+  }, [dispatch, cardId])
+
+  const onClickCancel = useCallback(() => {
+    dispatch({
+      type: AnalyticsSagaActions.SEND_ANALYTICS,
+      payload: {
+        eventName: "CANCEL_DELETE_CARD_MODAL",
+        eventProperties: {
+          cardId,
+        },
+      },
+    })
   }, [dispatch, cardId])
 
   useEffect(() => {
@@ -43,11 +65,11 @@ const useDeleteModal = (cardId: string) => {
     // TODO Mostrar el mensaje de error
   }
 
-  return { dialog, fetchStatus, onClick }
+  return { dialog, fetchStatus, onClick, onClickCancel }
 }
 
 const DeleteModal: React.FC<DeleteModalProps> = ({ cardId, cardName }) => {
-  const { dialog, fetchStatus, onClick } = useDeleteModal(cardId)
+  const { dialog, fetchStatus, onClick, onClickCancel } = useDeleteModal(cardId)
 
   if (fetchStatus === FETCH_STATES.ERROR) {
     // TODO Mostrar el mensaje de error
@@ -57,6 +79,7 @@ const DeleteModal: React.FC<DeleteModalProps> = ({ cardId, cardName }) => {
     <DeleteButton
       dialog={dialog}
       onClick={onClick}
+      onClickCancel={onClickCancel}
       titleModal={`Delete ${cardName} from the catalog`}
       textModal="Are you sure want to delete this card?. This action can't
       be undone."
@@ -84,14 +107,33 @@ function App() {
   const dispatch = useDispatch()
   const location = useLocation()
   useEffect(() => {
-    dispatch({
-      type: CardsSagaActions.FETCH_CARDS_SAGA,
-      payload: { filter: new URLSearchParams(location.search).get("q") || "" },
-    })
+    if (fetchStatus === FETCH_STATES.IDLE) {
+      dispatch({
+        type: CardsSagaActions.FETCH_CARDS_SAGA,
+        payload: {
+          filter: new URLSearchParams(location.search).get("q") || "",
+        },
+      })
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   const fetchStatus = useSelector(selectFetchCardsStatus)
   const cards = useSelector(selectCards)
+
+  const goToFormClick = useCallback(
+    (cardId) => () => {
+      dispatch({
+        type: AnalyticsSagaActions.SEND_ANALYTICS,
+        payload: {
+          eventName: "GO_TO_EDIT_FORM",
+          eventProperties: {
+            cardId,
+          },
+        },
+      })
+    },
+    [dispatch],
+  )
 
   if (fetchStatus === FETCH_STATES.LOADING) {
     return (
@@ -146,6 +188,7 @@ function App() {
                 <DeleteModal cardId={card._id} cardName={card.name} />
                 <EditCard
                   to={{ pathname: `/cards/${card._id}`, state: { idx } }}
+                  onClick={goToFormClick(card._id)}
                 />
               </GridActionsLayout>
             </GridItemLayout>

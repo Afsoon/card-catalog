@@ -9,6 +9,7 @@ import {
   delay,
 } from "redux-saga/effects"
 import { CardsSagaActions } from "./sagasActions"
+import { AnalyticsSagaActions } from "../analytics/sagasActions"
 import { getCards, deleteCard, updateCard } from "./api"
 import {
   FETCH_CARDS,
@@ -21,8 +22,10 @@ import {
   UPDATE_CARD,
   UPDATE_CARD_ERROR,
   UPDATE_CARD_SUCCESS,
+  RESET_UPDATE_STATUS,
 } from "./CardsSlice"
-import { CardUpdateRequest } from "../../types"
+import { push } from "connected-react-router"
+import { Card, CardUpdateRequest } from "../../types"
 
 async function extractCards(filter: string | undefined) {
   const response = await getCards(filter)
@@ -71,6 +74,21 @@ export function* loadCardsSagas({
   try {
     const result = yield call(extractCards, payload?.filter)
     yield put(FETCH_CARDS_SUCCESS(result))
+    yield put({
+      type: AnalyticsSagaActions.SEND_ANALYTICS,
+      payload: {
+        eventName: "LOADING_CARDS",
+        eventProperties: {
+          filter: payload?.filter || "NO FILTER",
+          count: result.reduce((acc: number, card: Card) => {
+            return acc + card.count.total
+          }, 0),
+          cardsThatHave: result.filter((card: Card) => {
+            return card.count.total > 0
+          }),
+        },
+      },
+    })
   } catch (exception) {
     yield put(FETCH_CARDS_ERROR({ errorMessage: "Unable to load the cards" }))
   }
@@ -112,6 +130,8 @@ export function* updateCardSagas({
       payload.cardRequest,
     )
     yield put(UPDATE_CARD_SUCCESS(result))
+    yield put(RESET_UPDATE_STATUS())
+    yield put(push("/"))
   } catch (exception) {
     yield put(
       UPDATE_CARD_ERROR({ errorMessage: "Unable to update the card selected" }),
@@ -132,6 +152,6 @@ export default function* () {
     takeEvery(CardsSagaActions.FETCH_CARDS_SAGA, loadCardsSagas),
     takeEvery(CardsSagaActions.DELETE_CARDS_SAGA, deleteCardSagas),
     takeEvery(CardsSagaActions.UPDATE_CARD_SAGA, updateCardSagas),
-    takeLatest(CardsSagaActions.INPUT_SEARCH, loadCardsSagas),
+    takeLatest(CardsSagaActions.INPUT_SEARCH, searchInputSagas),
   ])
 }

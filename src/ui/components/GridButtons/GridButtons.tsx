@@ -13,6 +13,7 @@ interface DeleteButtonProps {
   titleModal: string
   textModal: string
   onClick: () => void
+  onClickCancel: () => void
 }
 
 export const DeleteButton: React.FC<DeleteButtonProps> = ({
@@ -21,10 +22,15 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({
   children,
   titleModal,
   textModal,
+  onClickCancel,
 }) => {
   const submitAction = useCallback(() => {
     onClick()
   }, [onClick])
+  const cancelAction = useCallback(() => {
+    onClickCancel()
+    dialog.hide()
+  }, [onClickCancel, dialog])
 
   return (
     <div className="w-0 flex-1 flex">
@@ -91,7 +97,7 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({
                 Delete
               </Button>
               <Button
-                onClick={dialog.hide}
+                onClick={cancelAction}
                 className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 px-4 py-2 bg-white text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
               >
                 Cancel
@@ -107,13 +113,15 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({
 interface EditCardProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   to: string | Record<string, any>
+  onClick: () => void
 }
 
-export const EditCard: React.FC<EditCardProps> = ({ to }) => {
+export const EditCard: React.FC<EditCardProps> = ({ to, onClick }) => {
   return (
     <div className="-ml-px w-0 flex-1 flex">
       <Link
         to={to}
+        onClick={onClick}
         className="relative w-0 flex-1 inline-flex items-center justify-center py-4 text-sm text-gray-700 font-medium border border-transparent rounded-br-lg hover:text-gray-500"
       >
         <svg

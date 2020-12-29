@@ -4,6 +4,7 @@ import { Switch, Route } from "react-router-dom"
 import { ConnectedRouter } from "connected-react-router"
 import "./index.css"
 import App from "./App"
+import DetailCard from "./DetailCard"
 import { store, history } from "./app/store"
 import { Provider } from "react-redux"
 import * as serviceWorker from "./serviceWorker"
@@ -17,7 +18,9 @@ ReactDOM.render(
     <Provider store={store}>
       <ConnectedRouter history={history}>
         <Switch>
-          <Route path="/cards/:cardId">Something</Route>
+          <Route path="/cards/:cardId">
+            <DetailCard />
+          </Route>
           <Route exact path="/">
             <App />
           </Route>
