@@ -8,7 +8,7 @@ export const FormLayout: React.FC<FormLayoutProps> = ({
   return (
     <form
       onSubmit={onSubmit}
-      className="bg-white rounded-lg shadow px-5 py-6 sm:px-6 h-full overflow-auto space-y-8 divide-y divide-gray-200"
+      className="bg-white rounded-lg shadow px-5 py-6 sm:px-6 h-full overflow-auto space-y-8 divide-y divide-gray-200 w-full"
     >
       {children}
     </form>

@@ -71,7 +71,19 @@ export const cardsSliceBuilder = (initialState: CardsState) =>
       },
       FETCH_CARDS_SUCCESS: (state, action: PayloadAction<SuccesFetchCards>) => {
         state.fetchStatus = FETCH_STATES.SUCCESS
-        state.value = action.payload.cards
+        /**
+         * I don't want to do this but it was one of few ways, and the most simple,
+         * to simulate an infinite list using the same data always. This way, if the user
+         * search by a filter, we start from an empty state.
+         */
+        if (action.payload.filter !== state.filter) {
+          state.value = []
+        }
+
+        for (let i = 0; i < action.payload.cards.length; i++) {
+          state.value.push(action.payload.cards[i])
+        }
+
         state.filter = action.payload.filter
         state.mapIdToValue = Object.fromEntries(
           action.payload.cards.map((card) => {
