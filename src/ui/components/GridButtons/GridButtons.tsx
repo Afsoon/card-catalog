@@ -12,6 +12,7 @@ interface DeleteButtonProps {
   dialog: DialogStateReturn
   titleModal: string
   textModal: string
+  errorText?: string
   onClick: () => void
   onClickCancel: () => void
 }
@@ -22,6 +23,7 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({
   children,
   titleModal,
   textModal,
+  errorText,
   onClickCancel,
 }) => {
   const submitAction = useCallback(() => {
@@ -87,6 +89,11 @@ export const DeleteButton: React.FC<DeleteButtonProps> = ({
                 <div className="mt-2">
                   <p className="text-sm text-gray-500">{textModal}</p>
                 </div>
+                {errorText && (
+                  <div className="mt-2">
+                    <p className="text-sm text-red-500">{errorText}</p>
+                  </div>
+                )}
               </div>
             </div>
             <div className="mt-5 sm:mt-4 sm:ml-10 sm:pl-4 sm:flex">

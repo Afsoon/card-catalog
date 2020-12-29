@@ -1,7 +1,6 @@
 import { useCallback, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { useLocation } from "react-router-dom"
-import { useDialogState } from "reakit/Dialog"
 import { Layout } from "./ui/layout/App"
 import {
   GridCardsLayout,
@@ -14,72 +13,29 @@ import { CardsSagaActions } from "./services/cards/sagasActions"
 import { AnalyticsSagaActions } from "./services/analytics/sagasActions"
 import {
   selectFetchCardsStatus,
-  selectDeleteCardStatus,
   FETCH_STATES,
   selectCards,
 } from "./services/cards/CardsSlice"
+import { useDeleteModal } from "./hooks"
 
 interface DeleteModalProps {
   cardId: string
   cardName: string
 }
 
-const useDeleteModal = (cardId: string) => {
-  const dialog = useDialogState()
-  const dispatch = useDispatch()
-  const fetchStatus = useSelector(selectDeleteCardStatus)
-
-  const onClick = useCallback(() => {
-    dispatch({ type: CardsSagaActions.DELETE_CARDS_SAGA, payload: { cardId } })
-    dispatch({
-      type: AnalyticsSagaActions.SEND_ANALYTICS,
-      payload: {
-        eventName: "DELETE_CARD_MODAL",
-        eventProperties: {
-          cardId,
-        },
-      },
-    })
-  }, [dispatch, cardId])
-
-  const onClickCancel = useCallback(() => {
-    dispatch({
-      type: AnalyticsSagaActions.SEND_ANALYTICS,
-      payload: {
-        eventName: "CANCEL_DELETE_CARD_MODAL",
-        eventProperties: {
-          cardId,
-        },
-      },
-    })
-  }, [dispatch, cardId])
-
-  useEffect(() => {
-    if (fetchStatus === FETCH_STATES.SUCCESS) {
-      dispatch({ type: CardsSagaActions.HIDE_DELETE_MODAL })
-      dialog.hide()
-    }
-  }, [fetchStatus, dialog, dispatch])
-
-  if (fetchStatus === FETCH_STATES.ERROR) {
-    // TODO Mostrar el mensaje de error
-  }
-
-  return { dialog, fetchStatus, onClick, onClickCancel }
-}
-
 const DeleteModal: React.FC<DeleteModalProps> = ({ cardId, cardName }) => {
   const { dialog, fetchStatus, onClick, onClickCancel } = useDeleteModal(cardId)
-
-  if (fetchStatus === FETCH_STATES.ERROR) {
-    // TODO Mostrar el mensaje de error
-  }
 
   return (
     <DeleteButton
       dialog={dialog}
       onClick={onClick}
       onClickCancel={onClickCancel}
+      errorText={
+        fetchStatus === FETCH_STATES.ERROR
+          ? "Unable to delete the card. Try more later"
+          : undefined
+      }
       titleModal={`Delete ${cardName} from the catalog`}
       textModal="Are you sure want to delete this card?. This action can't
       be undone."
