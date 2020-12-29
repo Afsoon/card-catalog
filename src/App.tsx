@@ -1,6 +1,6 @@
 import { useCallback, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { useLocation } from "react-router-dom"
+import { useLocation, useHistory } from "react-router-dom"
 import { Layout } from "./ui/layout/App"
 import {
   GridCardsLayout,
@@ -15,6 +15,7 @@ import {
   selectFetchCardsStatus,
   FETCH_STATES,
   selectCards,
+  selectFilter,
 } from "./services/cards/CardsSlice"
 import { useDeleteModal } from "./hooks"
 
@@ -62,12 +63,20 @@ const DeleteModal: React.FC<DeleteModalProps> = ({ cardId, cardName }) => {
 function App() {
   const dispatch = useDispatch()
   const location = useLocation()
+  const history = useHistory()
+  const filter = useSelector(selectFilter)
   useEffect(() => {
+    if (filter) {
+      history.replace({
+        pathname: "/",
+        search: filter ? `?q=${filter}` : "",
+      })
+    }
     if (fetchStatus === FETCH_STATES.IDLE) {
       dispatch({
         type: CardsSagaActions.FETCH_CARDS_SAGA,
         payload: {
-          filter: new URLSearchParams(location.search).get("q") || "",
+          filter: filter || new URLSearchParams(location.search).get("q") || "",
         },
       })
     }

@@ -11,6 +11,7 @@ export enum FETCH_STATES {
 
 interface CardsState {
   value: Card[]
+  filter: string | undefined
   mapIdToValue: Record<string, Card>
   fetchStatus: FETCH_STATES
   deleteStatus: FETCH_STATES
@@ -21,10 +22,16 @@ interface CardsState {
 const initialState: CardsState = {
   value: [],
   mapIdToValue: {},
+  filter: undefined,
   fetchStatus: FETCH_STATES.IDLE,
   deleteStatus: FETCH_STATES.IDLE,
   updateStatus: FETCH_STATES.IDLE,
   error: undefined,
+}
+
+interface SuccesFetchCards {
+  filter: string | undefined
+  cards: Card[]
 }
 
 export const cardsSliceBuilder = (initialState: CardsState) =>
@@ -62,11 +69,12 @@ export const cardsSliceBuilder = (initialState: CardsState) =>
         state.updateStatus = FETCH_STATES.ERROR
         state.error = action.payload
       },
-      FETCH_CARDS_SUCCESS: (state, action: PayloadAction<Card[]>) => {
+      FETCH_CARDS_SUCCESS: (state, action: PayloadAction<SuccesFetchCards>) => {
         state.fetchStatus = FETCH_STATES.SUCCESS
-        state.value = action.payload
+        state.value = action.payload.cards
+        state.filter = action.payload.filter
         state.mapIdToValue = Object.fromEntries(
-          action.payload.map((card) => {
+          action.payload.cards.map((card) => {
             return [card._id, card]
           }),
         )
@@ -118,6 +126,7 @@ export const {
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
 export const selectCards = (state: RootState) => state.cards.value
+export const selectFilter = (state: RootState) => state.cards.filter
 export const selectCard = (id: string) => (state: RootState) =>
   state.cards.mapIdToValue[id]
 export const selectFetchCardsStatus = (state: RootState) =>

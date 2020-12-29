@@ -47,7 +47,7 @@ test("Get all cards without filter sagas", () => {
   })
     .withReducer(counterSlice.reducer)
     .put(FETCH_CARDS())
-    .put(FETCH_CARDS_SUCCESS(cards))
+    .put(FETCH_CARDS_SUCCESS({ cards, filter: undefined }))
     .put({
       type: AnalyticsSagaActions.SEND_ANALYTICS,
       payload: {
@@ -70,6 +70,7 @@ test("Get all cards without filter sagas", () => {
       deleteStatus: FETCH_STATES.IDLE,
       updateStatus: FETCH_STATES.IDLE,
       error: undefined,
+      filter: undefined,
     })
     .run({ timeout: false })
 })
@@ -81,7 +82,7 @@ test("Get all cards with filter sagas", () => {
   })
     .withReducer(counterSlice.reducer)
     .put(FETCH_CARDS())
-    .put(FETCH_CARDS_SUCCESS([cards[0]]))
+    .put(FETCH_CARDS_SUCCESS({ cards: [cards[0]], filter: "Du" }))
     .put({
       type: AnalyticsSagaActions.SEND_ANALYTICS,
       payload: {
@@ -104,6 +105,7 @@ test("Get all cards with filter sagas", () => {
       deleteStatus: FETCH_STATES.IDLE,
       updateStatus: FETCH_STATES.IDLE,
       error: undefined,
+      filter: "Du",
     })
     .run({ timeout: false })
 })

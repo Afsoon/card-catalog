@@ -73,7 +73,7 @@ export function* loadCardsSagas({
   yield put(FETCH_CARDS())
   try {
     const result = yield call(extractCards, payload?.filter)
-    yield put(FETCH_CARDS_SUCCESS(result))
+    yield put(FETCH_CARDS_SUCCESS({ cards: result, filter: payload?.filter }))
     yield put({
       type: AnalyticsSagaActions.SEND_ANALYTICS,
       payload: {
