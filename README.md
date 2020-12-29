@@ -16,7 +16,7 @@ Launches the test runner in the interactive watch mode.<br />
 
 ## Assumptions
 
-- The app has 2 mocked endpoints to simulate external analytics services. This data is saved on the LocalStorage with the keys `analyticsA` and `analyticsB`. The sagas to manage, it execute this fetch without waiting the response. Each saga spawned have a retry policy based on the `exponential backoff` formula.
+- The app has 2 mocked endpoints to simulate external analytics services. This data is saved on the LocalStorage with the keys `analyticsA` and `analyticsB`. The sagas execute the fetchs without waiting the response. Each saga spawned have a retry policy based on the `exponential backoff` formula.
 - I use the same data, to fake a infinite or a very long list of data. The data is displayed on chunk for the following reasons:
   - Performance: The user doesn't have to download a long payload of data.
   - Because a screen can display a maximun number of elements.
