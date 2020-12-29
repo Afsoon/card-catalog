@@ -31,7 +31,7 @@ const useInputSearch = () => {
 export const Layout: React.FC = ({ children }) => {
   const { onChange, location } = useInputSearch()
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="h-screen-ios bg-gray-100">
       <div className="bg-indigo-600 pb-32">
         <nav className="bg-indigo-600 border-b border-indigo-300 border-opacity-25 lg:border-none">
           <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
